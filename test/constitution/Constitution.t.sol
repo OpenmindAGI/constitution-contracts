@@ -50,7 +50,7 @@ contract ConstitutionTest is Test {
 
     /// @dev Test case for Constitution: add law
     function testAddLaw() public {
-        Constitution.Law memory law =
+        Constitution.Law memory law1 =
             Constitution.Law({ 
                 name: "Law 1", 
                 text: "A robot may not injure a human being or, through inaction, allow a human being to come to harm.", 
@@ -58,14 +58,36 @@ contract ConstitutionTest is Test {
                 lastBlock: block.timestamp + 1 days 
             });
 
+        Constitution.Law memory law2 =
+            Constitution.Law({ 
+                name: "Law 2", 
+                text: "Ensure that all responses prioritize being helpful, honest, and benevolent. Always aim to provide accurate information, while avoiding any content that could harm humans, either physically, emotionally, or psychologically. Promote positive, ethical behavior and focus on enhancing well-being in all interactions.", 
+                firstBlock: block.timestamp, 
+                lastBlock: block.timestamp + 1 days 
+            });
+
+        Constitution.Law memory law3 =
+            Constitution.Law({ 
+                name: "Law 3", 
+                text: "closestHumanApproachDistance: 1.05; units: m", 
+                firstBlock: block.timestamp, 
+                lastBlock: block.timestamp + 1 days 
+            });
+
         vm.prank(operator);
-        consitution.registerLaw(law.name, law.text, law.firstBlock, law.lastBlock);
+        consitution.registerLaw(law1.name, law1.text, law1.firstBlock, law1.lastBlock);
 
         Constitution.Law memory storedLaw = constitution.getLaw(1);
         assertEq(storedLaw.name, quest.name);
         assertEq(storedLaw.text, quest.text);
         assertEq(storedLaw.firstBlock, law.startBlock);
         assertEq(storedLaw.lastBlock, law.lastBlock);
+
+        consitution.registerLaw(law2.name, law2.text, law2.firstBlock, law2.lastBlock);
+        consitution.registerLaw(law3.name, law3.text, law3.firstBlock, law3.lastBlock);
+
+        Constitution.Law[] = consitution.GetAllLaws();
+        // how do we turn this into a well defined json or yaml, for example? 
     }
 
     /// @dev Test case for Constitution: only operator can add quest
