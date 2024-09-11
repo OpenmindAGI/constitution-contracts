@@ -6,7 +6,7 @@ import "forge-std/Test.sol";
 
 // Target contract
 import { Proxy } from "src/universal/Proxy.sol";
-import { SystemConfig } from "src/points/SystemConfig.sol";
+import { SystemConfig } from "src/constitution/SystemConfig.sol";
 
 contract SystemConfigTest is Test {
     SystemConfig public systemConfig;

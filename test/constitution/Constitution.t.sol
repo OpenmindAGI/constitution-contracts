@@ -75,18 +75,19 @@ contract ConstitutionTest is Test {
             });
 
         vm.prank(operator);
-        consitution.registerLaw(law1.name, law1.text, law1.firstBlock, law1.lastBlock);
+        
+        constitution.registerLaw(law1.name, law1.text, law1.firstBlock, law1.lastBlock);
 
-        Constitution.Law memory storedLaw = constitution.getLaw(1);
-        assertEq(storedLaw.name, quest.name);
-        assertEq(storedLaw.text, quest.text);
-        assertEq(storedLaw.firstBlock, law.startBlock);
-        assertEq(storedLaw.lastBlock, law.lastBlock);
+        Constitution.Law memory storedLaw = constitution.GetNthLaw(1);
+        assertEq(storedLaw.name, law1.name);
+        assertEq(storedLaw.text, law1.text);
+        assertEq(storedLaw.firstBlock, law1.firstBlock);
+        assertEq(storedLaw.lastBlock, law1.lastBlock);
 
-        consitution.registerLaw(law2.name, law2.text, law2.firstBlock, law2.lastBlock);
-        consitution.registerLaw(law3.name, law3.text, law3.firstBlock, law3.lastBlock);
+        constitution.registerLaw(law2.name, law2.text, law2.firstBlock, law2.lastBlock);
+        constitution.registerLaw(law3.name, law3.text, law3.firstBlock, law3.lastBlock);
 
-        Constitution.Law[] = consitution.GetAllLaws();
+        Constitution.Law[] = constitution.GetAllLaws();
         // how do we turn this into a well defined json or yaml, for example? 
     }
 
@@ -102,7 +103,7 @@ contract ConstitutionTest is Test {
 
         vm.prank(address(0x789));
         vm.expectRevert("Constitution: caller is not the operator");
-        consitution.registerLaw(law.name, law.text, law.firstBlock, law.lastBlock);
+        constitution.registerLaw(law.name, law.text, law.firstBlock, law.lastBlock);
     }
 
     /// @dev Test case for Constitution: add user

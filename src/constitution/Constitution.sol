@@ -17,7 +17,7 @@ contract Constitution is OwnableUpgradeable {
     struct Law {
         uint256 id;
         string name;
-        string law;
+        string text;
         uint256 firstBlock;
         uint256 lastBlock;
     }
@@ -92,10 +92,10 @@ contract Constitution is OwnableUpgradeable {
     }
 
     /// @notice A function to register a new Law.
-    /// @param name The name of the law.
-    /// @param text The text of the law.
-    /// @param firstBlock The first block the law is valid.
-    /// @param lastBlock The last block the law is valid.
+    /// @param _name The name of the law.
+    /// @param _text The text of the law.
+    /// @param _firstBlock The first block the law is valid.
+    /// @param _lastBlock The last block the law is valid.
     function registerLaw(
         string memory _name,
         string memory _text,
@@ -134,9 +134,8 @@ contract Constitution is OwnableUpgradeable {
     /// @param _amount The amount of points to add.
     function addPoints(bytes32 _user, uint256 _amount) public onlyOperator {
         require(registeredUsers[_user], "Constitution: user not registered");
-        submissions[_user].points = _amount;
         points[_user] += _amount;
-        emit PointsAdded(_user, _quest, _amount);
+        emit PointsAdded(_user, _amount);
     }
 
     /// @notice A function to subtract points from a user's balance.
