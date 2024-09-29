@@ -133,4 +133,10 @@ contract UniversalIdentity is IUniversalIdentity, OwnableUpgradeable {
     function getSubscribedCharters(address charter) external view returns (bool) {
         return subscribedCharters[charter];
     }
+
+    /// @notice Gets the compliance status of a rule
+    /// @param rule The rule to check.
+    function getComplianceStatus(bytes memory rule) external view returns (bool) {
+        return complianceStatus[rule];
+    }
 }
