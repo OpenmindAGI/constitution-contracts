@@ -102,7 +102,7 @@ contract UniversalIdentityTest is Test {
     }
 
     /// @dev Test that the user can be registered.
-    function testRegisterUser() public {
+    function testRegisterUserAsHuman() public {
         bytes memory rule = abi.encodePacked("rule");
         bytes[] memory ruleSet = new bytes[](1);
         ruleSet[0] = rule;
@@ -115,47 +115,116 @@ contract UniversalIdentityTest is Test {
         universalIdentity.addRule(rule);
         assertEq(universalIdentity.getRule(rule), true);
 
-        universalCharter.registerUser(address(universalIdentity), IUniversalCharter.UserType.Robot, ruleSet);
-        UniversalCharter.UserInfo memory userInfo = universalCharter.getUserInfo(address(universalIdentity));
+        universalCharter.registerUser(IUniversalCharter.UserType.Human, ruleSet);
+        UniversalCharter.UserInfo memory userInfo = universalCharter.getUserInfo(owner);
         assertEq(userInfo.isRegistered, true);
-        assertEq(uint(userInfo.userType), uint(IUniversalCharter.UserType.Robot));
+        assertEq(uint256(userInfo.userType), uint256(IUniversalCharter.UserType.Human));
         assertEq(userInfo.ruleSetVersion, 1);
 
         vm.stopPrank();
     }
 
-    // /// @dev Test that only the owner can register a user.
-    // function testRegisterUserOnlyOnce() public {
+    /// @dev Test that the user can be registered.
+    function testRegisterUserAsRobot() public {
+        bytes memory rule = abi.encodePacked("rule");
+        bytes[] memory ruleSet = new bytes[](1);
+        ruleSet[0] = rule;
 
-    //     testRegisterUser();
+        vm.startPrank(owner);
 
-    //     vm.startPrank(owner);
+        universalCharter.updateRuleSet(ruleSet);
+        assertEq(universalCharter.getLatestRuleSetVersion(), 1);
 
-    //     bytes memory rule = abi.encodePacked("rule");
-    //     bytes[] memory ruleSet = new bytes[](1);
-    //     ruleSet[0] = rule;
+        universalIdentity.addRule(rule);
+        assertEq(universalIdentity.getRule(rule), true);
 
-    //     vm.expectRevert("User already registered");
-    //     universalCharter.registerUser(address(universalIdentity), IUniversalCharter.UserType.Robot, ruleSet);
+        universalIdentity.subscribeAndRegisterToCharter(address(universalCharter), 1);
+        assertEq(universalIdentity.getSubscribedCharters(address(universalCharter)), true);
 
-    //     vm.stopPrank();
-    // }
+        UniversalCharter.UserInfo memory userInfo = universalCharter.getUserInfo(address(universalIdentity));
+        assertEq(userInfo.isRegistered, true);
+        assertEq(uint256(userInfo.userType), uint256(IUniversalCharter.UserType.Robot));
+        assertEq(userInfo.ruleSetVersion, 1);
 
-    // function testRegisterUserReverted() public {
-    //     bytes memory rule = abi.encodePacked("rule");
-    //     bytes[] memory ruleSet = new bytes[](1);
-    //     ruleSet[0] = rule;
+        vm.stopPrank();
+    }
 
-    //     vm.startPrank(owner);
+    /// @dev Test that the user can register only once.
+    function testRegisterUserOnlyOnce() public {
+        testRegisterUserAsRobot();
 
-    //     universalCharter.updateRuleSet(ruleSet);
-    //     assertEq(universalCharter.getLatestRuleSetVersion(), 1);
+        vm.startPrank(owner);
 
-    //     universalIdentity.addRule(abi.encodePacked("invalid rule"));
+        bytes memory rule = abi.encodePacked("rule");
+        bytes[] memory ruleSet = new bytes[](1);
+        ruleSet[0] = rule;
 
-    //     vm.expectRevert("Invalid or unregistered rule set");
-    //     universalCharter.registerUser(address(universalIdentity), IUniversalCharter.UserType.Robot, ruleSet);
+        vm.expectRevert("Already subscribed to this charter");
+        universalIdentity.subscribeAndRegisterToCharter(address(universalCharter), 1);
 
-    //     vm.stopPrank();
-    // }
+        vm.stopPrank();
+    }
+
+    /// @dev Test that the invalid rule is reverted.
+    function testRegisterUserReverted() public {
+        bytes memory rule = abi.encodePacked("rule");
+        bytes[] memory ruleSet = new bytes[](1);
+        ruleSet[0] = rule;
+
+        vm.startPrank(owner);
+
+        universalCharter.updateRuleSet(ruleSet);
+        assertEq(universalCharter.getLatestRuleSetVersion(), 1);
+
+        universalIdentity.addRule(abi.encodePacked("invalid rule"));
+
+        vm.expectRevert(abi.encodeWithSignature("RuleNotAgreed(bytes)", rule));
+        universalIdentity.subscribeAndRegisterToCharter(address(universalCharter), 1);
+
+        vm.stopPrank();
+    }
+
+    /// @dev Test that the user can leave the system.
+    function testLeaveSystem() public {
+        testRegisterUserAsRobot();
+
+        vm.startPrank(owner);
+
+        universalIdentity.leaveCharter(address(universalCharter));
+        assertEq(universalIdentity.getSubscribedCharters(address(universalCharter)), false);
+
+        UniversalCharter.UserInfo memory userInfo = universalCharter.getUserInfo(address(universalIdentity));
+        assertEq(userInfo.isRegistered, false);
+        assertEq(uint256(userInfo.userType), uint256(IUniversalCharter.UserType.Human));
+        assertEq(userInfo.ruleSetVersion, 0);
+
+        vm.stopPrank();
+    }
+
+    /// @dev Test that the user can leave the system only once.
+    function testLeaveSystemOnlyOnce() public {
+        testLeaveSystem();
+
+        vm.startPrank(owner);
+
+        vm.expectRevert("Not subscribed to this charter");
+        universalIdentity.leaveCharter(address(universalCharter));
+
+        vm.stopPrank();
+    }
+
+    /// @dev Test that the robot can leave the system if the rule is removed.
+    function testLeaveSystemReverted() public {
+        testRegisterUserAsRobot();
+
+        vm.startPrank(owner);
+
+        bytes memory rule = abi.encodePacked("rule");
+        universalIdentity.removeRule(rule);
+
+        vm.expectRevert(abi.encodeWithSignature("RuleNotAgreed(bytes)", rule));
+        universalIdentity.leaveCharter(address(universalCharter));
+
+        vm.stopPrank();
+    }
 }

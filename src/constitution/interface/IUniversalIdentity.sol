@@ -29,4 +29,10 @@ interface IUniversalIdentity {
 
     /// @dev Emitted when a rule is removed from the robot's identity.
     event RuleRemoved(bytes rule);
+
+    /// @dev Emitted when a charter is subscribed to.
+    event SubscribedToCharter(address indexed charter);
+
+    /// @dev Emitted when it is unsubscribed from a charter.
+    event UnsubscribedFromCharter(address indexed charter);
 }

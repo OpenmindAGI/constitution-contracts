@@ -60,11 +60,10 @@ contract UniversalCharter is IUniversalCharter, OwnableUpgradeable {
     }
 
     /// @notice Registers a user (either human or robot) by agreeing to a rule set
-    /// @param user The address of the user joining the system (robot or human)
     /// @param userType The type of user: Human or Robot
     /// @param ruleSet The array of individual rules the user agrees to follow
-    function registerUser(address user, UserType userType, bytes[] memory ruleSet) external override whenNotPaused {
-        require(!users[user].isRegistered, "User already registered");
+    function registerUser(UserType userType, bytes[] memory ruleSet) external override whenNotPaused {
+        require(!users[msg.sender].isRegistered, "User already registered");
 
         // Hash the rule set to find the corresponding version
         bytes32 ruleSetHash = keccak256(abi.encode(ruleSet));
@@ -73,13 +72,13 @@ contract UniversalCharter is IUniversalCharter, OwnableUpgradeable {
 
         // For robots, ensure compliance with each rule via the UniversalIdentity contract
         if (userType == UserType.Robot) {
-            require(_checkRobotCompliance(user, version), "Robot not compliant with rule set");
+            require(_checkRobotCompliance(msg.sender, version), "Robot not compliant with rule set");
         }
 
         // Register the user with the versioned rule set
-        users[user] = UserInfo({ isRegistered: true, userType: userType, ruleSetVersion: version });
+        users[msg.sender] = UserInfo({ isRegistered: true, userType: userType, ruleSetVersion: version });
 
-        emit UserRegistered(user, userType, ruleSet);
+        emit UserRegistered(msg.sender, userType, ruleSet);
     }
 
     /// @notice Allows a user (human or robot) to leave the system after passing compliance checks
@@ -94,7 +93,7 @@ contract UniversalCharter is IUniversalCharter, OwnableUpgradeable {
             require(_checkRobotCompliance(msg.sender, version), "Robot not compliant with rule set");
         }
 
-        userInfo = UserInfo({ isRegistered: false, userType: UserType.Human, ruleSetVersion: 0 });
+        users[msg.sender] = UserInfo({ isRegistered: false, userType: UserType.Human, ruleSetVersion: 0 });
 
         emit UserLeft(msg.sender);
     }

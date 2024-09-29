@@ -12,13 +12,12 @@ interface IUniversalCharter {
     }
 
     /// @notice Registers a user (human or robot) to join the system by agreeing to a rule set.
-    /// @param user Address of the user (either human or robot) joining the system.
     /// @param userType The type of user.
     /// @param ruleSet The array of individual rules the user agrees to follow.
     /// @dev This function MUST be implemented by contracts using this interface.
     /// @dev The implementing contract MUST ensure that the user complies with the specified rule set before registering
     /// them in the system by invoking `checkCompliance`.
-    function registerUser(address user, UserType userType, bytes[] memory ruleSet) external;
+    function registerUser(UserType userType, bytes[] memory ruleSet) external;
 
     /// @notice Allows a user (human or robot) to leave the system
     /// @dev This function MUST be callable only by the user themselves (via `msg.sender`).

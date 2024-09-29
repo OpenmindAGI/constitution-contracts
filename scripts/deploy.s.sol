@@ -12,7 +12,6 @@ import { SystemConfig } from "src/constitution/SystemConfig.sol";
 /// @title Deploy
 /// @notice This script deploys the Points contract.
 contract Deploy is Script {
-
     /// @notice The addresses of the contracts.
     mapping(string => address) public addresses;
 
@@ -29,9 +28,9 @@ contract Deploy is Script {
 
     /// @notice Run the script
     function run() external {
-      deployProxies();
-      deployImplementations();
-      setImplementation();
+        deployProxies();
+        deployImplementations();
+        setImplementation();
     }
 
     /// @notice Deploy Proxy
@@ -88,14 +87,7 @@ contract Deploy is Script {
     /// @notice Deploy ERC1967 Proxy with owner
     /// @param _name The name of the proxy
     /// @param _proxyOwner The owner of the proxy
-    function deployERC1967ProxyWithOwner(
-        string memory _name,
-        address _proxyOwner
-    )
-        public
-        broadcast
-        returns (address)
-    {
+    function deployERC1967ProxyWithOwner(string memory _name, address _proxyOwner) public broadcast returns (address) {
         console.log("Deploying ERC1967 Proxy with owner: %s", _name);
 
         Proxy proxy = new Proxy({ _admin: _proxyOwner });
@@ -106,5 +98,4 @@ contract Deploy is Script {
 
         return address(proxy);
     }
-
 }
