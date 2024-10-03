@@ -5,9 +5,6 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ universalidentity-holesky",
-    "create-local": "graph create --node http://localhost:8020/ universalidentity-holesky",
-    "remove-local": "graph remove --node http://localhost:8020/ universalidentity-holesky",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 universalidentity-holesky",
     "test": "graph test"
   },
   "dependencies": {

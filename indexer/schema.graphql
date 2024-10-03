@@ -1,0 +1,8 @@
+type Rule @entity {
+  id: Bytes!
+  rule: Bytes!
+  active: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

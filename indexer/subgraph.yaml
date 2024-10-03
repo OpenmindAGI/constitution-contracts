@@ -16,14 +16,13 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - AdminChanged
-        - Upgraded
+        - Rule
       abis:
         - name: UniversalIdentity
           file: ./abis/UniversalIdentity.json
       eventHandlers:
-        - event: AdminChanged(address,address)
-          handler: handleAdminChanged
-        - event: Upgraded(indexed address)
-          handler: handleUpgraded
+        - event: RuleAdded(bytes)
+          handler: handleRuleAdded
+        - event: RuleRemoved(bytes)
+          handler: handleRuleRemoved
       file: ./src/universal-identity.ts
