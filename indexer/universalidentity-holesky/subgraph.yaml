@@ -1,0 +1,29 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: UniversalIdentity
+    network: holesky
+    source:
+      address: "0xdD5D41217114199a844c2CD3F1295eE937aB0010"
+      abi: UniversalIdentity
+      startBlock: 2456514
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AdminChanged
+        - Upgraded
+      abis:
+        - name: UniversalIdentity
+          file: ./abis/UniversalIdentity.json
+      eventHandlers:
+        - event: AdminChanged(address,address)
+          handler: handleAdminChanged
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/universal-identity.ts
